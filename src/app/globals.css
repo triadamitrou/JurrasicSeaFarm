@@ -1,0 +1,345 @@
+@import "tailwindcss";
+
+/*
+ * Jurassic Sea Farms, Portland Harbour.
+ *
+ * The colours are theirs. The navy is the logo, exactly (#123556). The
+ * teals and the slate come from their own site's palette: the harbour
+ * band behind "Why aquaculture?" and the slate behind the UN goals. The
+ * pale aqua is the wave in their own artwork. The kelp gold is read off
+ * their photographs of the Sugar Kelp, and the coral is the coral in
+ * their watercolours, used sparingly.
+ *
+ * The site leads with the harbour at depth rather than a pale ground,
+ * and surfaces into the aqua where the copy is longest.
+ */
+@theme {
+  --color-abyss: #0a1f33;
+  --color-navy: #123556;
+  --color-slate: #3d5975;
+  --color-teal: #278d83;
+  --color-teal-deep: #144641;
+  --color-aqua: #b7f0eb;
+  --color-foam: #e9f6f4;
+  --color-kelp: #c4a052;
+  --color-coral: #e86f55;
+
+  --font-display: var(--font-vollkorn);
+  --font-body: var(--font-instrument);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+:root {
+  --gutter: clamp(1.25rem, 5vw, 4.5rem);
+}
+
+* {
+  min-width: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-abyss);
+  color: var(--color-foam);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-aqua);
+  color: var(--color-navy);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-kelp);
+  outline-offset: 3px;
+}
+
+/* --------------------------------------------------------------- type */
+
+.u-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+}
+
+.u-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.u-latin {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.u-body {
+  font-size: clamp(1rem, 1.05vw, 1.1rem);
+  line-height: 1.72;
+}
+
+.u-wrap {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  max-width: 84rem;
+}
+
+/*
+ * Their logo, carried as a mask over currentColor so the one artwork
+ * goes navy on the aqua and foam on the deep sections. Never redrawn.
+ */
+.u-logo,
+.u-mark {
+  display: block;
+  background: currentColor;
+  -webkit-mask: var(--src) center / contain no-repeat;
+  mask: var(--src) center / contain no-repeat;
+}
+.u-logo {
+  --src: url("/img/logo.png");
+  aspect-ratio: 2000 / 744;
+}
+.u-mark {
+  --src: url("/img/mark.png");
+  aspect-ratio: 781 / 744;
+}
+
+/* ------------------------------------------------------------ buttons */
+
+@layer components {
+  .u-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    border-radius: 999px;
+    padding: 0.9rem 1.6rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--color-aqua);
+    color: var(--color-navy);
+    transition:
+      background 420ms var(--ease-out-expo),
+      color 420ms var(--ease-out-expo),
+      transform 420ms var(--ease-out-expo);
+  }
+  .u-btn:hover {
+    background: var(--color-kelp);
+  }
+  .u-btn--navy {
+    background: var(--color-navy);
+    color: var(--color-foam);
+  }
+  .u-btn--navy:hover {
+    background: var(--color-teal-deep);
+    color: var(--color-foam);
+  }
+  .u-btn--line {
+    background: transparent;
+    color: currentColor;
+    box-shadow: inset 0 0 0 1.5px currentColor;
+  }
+  .u-btn--line:hover {
+    background: currentColor;
+  }
+  .u-btn--line:hover > * {
+    filter: invert(1);
+  }
+
+  .u-link {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+    padding-bottom: 2px;
+    transition: background-size 500ms var(--ease-out-expo);
+  }
+  .u-link:hover {
+    background-size: 0% 1px;
+    background-position: 100% 100%;
+  }
+
+  .u-rail {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .u-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .u-rail > * {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+
+  .u-field {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1.5px solid color-mix(in srgb, currentColor 35%, transparent);
+    padding: 0.85rem 0;
+    font: inherit;
+    color: inherit;
+    border-radius: 0;
+    transition: border-color 300ms;
+  }
+  .u-field:focus {
+    outline: none;
+    border-bottom-color: currentColor;
+  }
+  .u-field::placeholder {
+    color: color-mix(in srgb, currentColor 45%, transparent);
+  }
+}
+
+/* ------------------------------------------------------------- reveal */
+
+[data-reveal] {
+  --d: 0ms;
+}
+
+[data-reveal="rise"] {
+  opacity: 0;
+  transform: translate3d(0, 1.6rem, 0);
+  transition:
+    opacity 900ms var(--ease-out-expo) var(--d),
+    transform 1000ms var(--ease-out-expo) var(--d);
+}
+[data-reveal="rise"].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal="fade"] {
+  opacity: 0;
+  transition: opacity 1200ms var(--ease-out-expo) var(--d);
+}
+[data-reveal="fade"].is-in {
+  opacity: 1;
+}
+
+[data-reveal="words"] .word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+}
+[data-reveal="words"] .word > span {
+  display: inline-block;
+  transform: translate3d(0, 110%, 0);
+  transition: transform 1000ms var(--ease-out-expo) var(--d);
+}
+[data-reveal="words"].is-in .word > span {
+  transform: none;
+}
+
+/*
+ * The porthole: a photograph opens out of a circle, the ring of their
+ * own logo. The clip goes on a child, never on the element the observer
+ * watches, or it reports a ratio of zero and never fires.
+ */
+[data-reveal="port"] {
+  overflow: hidden;
+}
+[data-reveal="port"] > * {
+  clip-path: circle(0% at 50% 50%);
+  transition: clip-path 1600ms var(--ease-in-out-quart) var(--d);
+}
+[data-reveal="port"].is-in > * {
+  clip-path: circle(75% at 50% 50%);
+}
+[data-reveal="port"] img {
+  transform: scale(1.14);
+  transition: transform 2000ms var(--ease-out-expo) var(--d);
+}
+[data-reveal="port"].is-in img {
+  transform: none;
+}
+
+/* The tide line: a rule that draws itself left to right. */
+[data-reveal="draw"] {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1200ms var(--ease-in-out-quart) var(--d);
+}
+[data-reveal="draw"].is-in {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal] * {
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+  [data-reveal="words"] .word > span,
+  [data-reveal="rise"],
+  [data-reveal="fade"],
+  [data-reveal="draw"] {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  [data-reveal="port"] > * {
+    clip-path: none !important;
+  }
+}
+
+/* ------------------------------------------------------------ marquee */
+
+.u-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+/* --------------------------------------------------------- the swell */
+
+/*
+ * Their watercolour illustrations bob gently in place, the way things
+ * do at a mooring. Each one is offset by its own --bob delay.
+ */
+@keyframes u-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1.2deg);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) rotate(1.2deg);
+  }
+}
+.u-bob {
+  animation: u-bob 7s ease-in-out infinite;
+  animation-delay: var(--bob, 0s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .u-bob {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------- header states */
+
+.site-header {
+  transition:
+    background 500ms var(--ease-out-expo),
+    color 500ms var(--ease-out-expo),
+    padding 500ms var(--ease-out-expo);
+}
+.site-header[data-condensed="true"][data-open="false"] {
+  background: color-mix(in srgb, var(--color-abyss) 88%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
