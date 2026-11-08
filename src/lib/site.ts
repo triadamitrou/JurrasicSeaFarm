@@ -45,18 +45,6 @@ export const nav = [
   { label: "Contact", href: "/contact/" },
 ];
 
-/** The band under the hero: what they do, in their own nouns. */
-export const marquee = [
-  "Pacific Oysters",
-  "Sugar Kelp",
-  "Portland Harbour",
-  "No chemicals",
-  "No fertilisers",
-  "No fresh water",
-  "Integrated Multi Trophic Aquaculture",
-  "Dorset",
-];
-
 export const intro = {
   title: "Who are we?",
   body: "We are an independent Integrated Multi Trophic Aqua Farm (IMTA) located in the sheltered waters of Portland Harbour in Dorset. Using sustainably farmed seaweed and oysters, our aim is to support ocean health and create a safer, cleaner habitat to support marine species.",
@@ -66,6 +54,17 @@ export const fruits = {
   title: "Fruits of the Sea",
   body: "Grown naturally in the gin-clear waters of Portland Harbour, our Pacific Oysters and Sugar Kelp thrive beneath the surface, where they purify the water and support biodiversity. Once they've worked their magic, they're carefully harvested and made ready for your plate, and other applications.",
 };
+
+export type IconName =
+  | "bowl"
+  | "droplet"
+  | "sprout"
+  | "wheat"
+  | "factory"
+  | "recycle"
+  | "plaster"
+  | "pill"
+  | "cell";
 
 export type Product = {
   slug: "oysters" | "seaweed";
@@ -79,7 +78,14 @@ export type Product = {
   enquiry: string;
   cta: string;
   body: string[];
-  uses?: { title: string; body: string }[];
+  uses?: {
+    key: string;
+    title: string;
+    icon: IconName;
+    body: string;
+    /** The industries this use serves, each read out of the body copy. */
+    sectors: { label: string; icon: IconName }[];
+  }[];
   describe?: string;
   photos: { src: string; alt: string }[];
 };
@@ -123,15 +129,35 @@ export const seaweed: Product = {
   ],
   uses: [
     {
+      key: "food",
       title: "In the kitchen",
+      icon: "bowl",
+      sectors: [
+        { label: "Food and drink", icon: "bowl" },
+        { label: "Cosmetics", icon: "droplet" },
+      ],
       body: "Popular in Eastern cuisine, Sugar Kelp has a subtly salty umami flavour, a little seaweed goes a long way! Ideal for Asian style soups and salads and jam-packed with natural compounds, trace elements and minerals, including a richness in iodine. It has long been used as a gelling agent in both food and cosmetic industries and can even be found in ice cream!",
     },
     {
-      title: "On the land",
+      key: "agriculture",
+      title: "Agriculture",
+      icon: "sprout",
+      sectors: [
+        { label: "Crop growing", icon: "wheat" },
+        { label: "Plant health", icon: "sprout" },
+      ],
       body: "When used in agriculture, seaweed enhances plant growth, boosts crop yields and improves stress tolerance in flora. The plant growth regulators found in seaweeds stimulate root development and nutrient absorption, while antioxidants enhance defence mechanisms against frost, pest and diseases.",
     },
     {
-      title: "In the lab",
+      key: "industry",
+      title: "Industry and medicine",
+      icon: "factory",
+      sectors: [
+        { label: "Bioplastics", icon: "recycle" },
+        { label: "Wound care", icon: "plaster" },
+        { label: "Pharmaceuticals", icon: "pill" },
+        { label: "Tissue engineering", icon: "cell" },
+      ],
       body: "Seaweeds can be used in a huge variety of applications, including bioplastics, wound dressings, drug delivery systems and tissue engineering, possessing inherent biocompatibility and antimicrobial properties which provide amazing medical and pharmaceutical solutions.",
     },
   ],

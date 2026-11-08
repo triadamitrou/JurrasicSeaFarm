@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import Marquee from "@/components/Marquee";
 import WaterColumn from "@/components/WaterColumn";
 import { Parallax, Reveal, Words } from "@/components/Reveal";
-import { fruits, goals, intro, mailto, marquee, products, site, story, work } from "@/lib/site";
+import { fruits, goals, intro, mailto, products, site, story, work } from "@/lib/site";
 
 export default function Home() {
   return (
@@ -49,9 +48,6 @@ export default function Home() {
           </Reveal>
         </div>
       </section>
-
-      {/* 2. The band. */}
-      <Marquee items={marquee} className="bg-aqua py-5 text-navy" />
 
       {/* 3. Fruits of the sea, before the story: what they grow comes first. */}
       <section aria-labelledby="fruits-title" className="relative overflow-hidden bg-foam py-24 text-navy sm:py-32">
