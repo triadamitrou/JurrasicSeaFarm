@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Scripts that rebuilt the logo artwork, not part of the site.
+    "brand/**",
   ]),
 ]);
 

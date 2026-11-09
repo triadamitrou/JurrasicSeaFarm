@@ -2,50 +2,99 @@ import Image from "next/image";
 import Link from "next/link";
 import WaterColumn from "@/components/WaterColumn";
 import { Parallax, Reveal, Words } from "@/components/Reveal";
-import { fruits, goals, intro, mailto, products, site, story, work } from "@/lib/site";
+import { fruits, goals, home, intro, mailto, oysters, products, site, story, work } from "@/lib/site";
 
 export default function Home() {
   return (
     <>
-      {/* 1. Hero: their own film of the kelp, full bleed. */}
+      {/* 1. Hero: the oysters lead. They are the main product. */}
       <section className="relative flex min-h-[100svh] items-end overflow-hidden bg-abyss pb-16 sm:pb-24">
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          src="/video/kelp.mp4"
-          poster="/img/kelp-underwater.jpg"
-          autoPlay
-          muted
-          loop
-          playsInline
-          aria-hidden="true"
+        <Image
+          src="/img/oysters-pile.jpg"
+          alt="A heap of freshly lifted Pacific Oysters from Portland Harbour"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
         <div
           aria-hidden="true"
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to top, var(--color-abyss), color-mix(in srgb, var(--color-abyss) 30%, transparent) 55%, color-mix(in srgb, var(--color-abyss) 45%, transparent))",
+              "linear-gradient(to top, var(--color-abyss) 2%, color-mix(in srgb, var(--color-abyss) 70%, transparent) 50%, color-mix(in srgb, var(--color-abyss) 55%, transparent))",
           }}
         />
         <div className="u-wrap relative">
-          <Reveal as="p" mode="fade" className="u-label text-aqua">
-            {site.strapline}
+          <Reveal as="p" mode="fade" className="u-label text-kelp">
+            {home.label}
           </Reveal>
           <Words
             as="h1"
-            text={site.headline}
-            className="u-display mt-5 max-w-[9em] text-[clamp(2.8rem,10.5vw,10rem)]"
+            text={home.headline}
+            className="u-display mt-5 max-w-[11ch] text-[clamp(2.8rem,9vw,8.5rem)]"
             stagger={90}
           />
-          <Reveal mode="rise" delay={500} className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/oysters/" className="u-btn">
-              Our oysters
-            </Link>
-            <Link href="/seaweed/" className="u-btn u-btn--line text-foam">
-              <span>Our seaweed</span>
-            </Link>
-            <span className="text-[0.88rem] text-foam/75">Grown in {site.farm}</span>
+          <Reveal mode="rise" delay={350} className="mt-6 max-w-[46ch] text-[clamp(1.05rem,1.4vw,1.3rem)] text-foam/90">
+            {home.sub}
           </Reveal>
+          <Reveal mode="rise" delay={500} className="mt-9 flex flex-wrap items-center gap-4">
+            <Link href="/click-and-collect/" className="u-btn">
+              Order oysters
+            </Link>
+            <Link href="/oysters/" className="u-btn u-btn--line text-foam">
+              <span>Discover our oysters</span>
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 2. The oyster, set out like a product: what makes it premium. */}
+      <section aria-label="The oyster" className="bg-abyss pb-24 pt-10 sm:pb-32">
+        <div className="u-wrap grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-10">
+          <Reveal mode="port" className="lg:col-span-5">
+            <div className="relative aspect-[4/5]">
+              <Image
+                src="/img/oysters-crate.jpg"
+                alt="Gloved hands grading Pacific Oysters in a crate"
+                fill
+                sizes="(min-width:1024px) 40vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+          </Reveal>
+          <div className="lg:col-span-6 lg:col-start-7">
+            <p className="u-label text-kelp">The oyster</p>
+            <Words
+              as="h2"
+              text={home.oysterTitle}
+              className="u-display u-feature mt-5 max-w-[14ch] text-[clamp(2.4rem,5vw,4.6rem)]"
+            />
+            <Reveal mode="rise" className="u-body mt-7 max-w-[52ch] text-foam/85">
+              {oysters.lede}
+            </Reveal>
+            <dl className="mt-10 border-t border-foam/15">
+              {home.spec.map((r, i) => (
+                <Reveal
+                  key={r.k}
+                  mode="rise"
+                  delay={i * 70}
+                  className="grid grid-cols-[8rem_1fr] gap-4 border-b border-foam/15 py-4 sm:grid-cols-[10rem_1fr]"
+                >
+                  <dt className="u-label pt-1 text-foam/55">{r.k}</dt>
+                  <dd className={r.latin ? "u-latin text-[1.1rem]" : "text-[1.05rem]"}>{r.v}</dd>
+                </Reveal>
+              ))}
+            </dl>
+            <Reveal mode="rise" className="mt-10 flex flex-wrap items-center gap-4">
+              <Link href="/click-and-collect/" className="u-btn">
+                Order for collection
+              </Link>
+              <a href={mailto("Oyster Enquiry")} className="u-btn u-btn--line text-foam">
+                <span>Trade enquiries</span>
+              </a>
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -128,7 +177,7 @@ export default function Home() {
             <Words
               as="h2"
               text="Part of the change, not the problem."
-              className="u-display mt-5 text-[clamp(2.4rem,5.4vw,4.8rem)] italic"
+              className="u-display u-feature mt-5 text-[clamp(2.4rem,5.4vw,4.8rem)]"
             />
             <Reveal mode="rise" className="u-body mt-8 max-w-[52ch] text-foam/85">
               {intro.body}
@@ -168,7 +217,7 @@ export default function Home() {
                 className="mx-auto w-[min(22rem,80%)]"
               />
             </Parallax>
-            <p className="u-display absolute inset-x-0 top-1/2 mx-auto max-w-[13ch] -translate-y-1/2 text-center text-[clamp(1.4rem,2.6vw,2rem)] italic text-foam [text-shadow:0_2px_18px_rgba(10,31,51,0.6)]">
+            <p className="u-display absolute inset-x-0 top-1/2 mx-auto max-w-[13ch] -translate-y-1/2 text-center text-[clamp(1.4rem,2.6vw,2rem)] u-feature text-foam [text-shadow:0_2px_18px_rgba(10,31,51,0.6)]">
               Many drops make up an ocean.
             </p>
           </div>

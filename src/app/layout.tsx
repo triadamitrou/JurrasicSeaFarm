@@ -22,6 +22,16 @@ const vollkorn = localFont({
   ],
 });
 
+// Gloock for the feature titles: a high-contrast display serif, sharp and
+// uncommon, used where the site once leaned on italics.
+const gloock = localFont({
+  variable: "--font-gloock",
+  display: "swap",
+  adjustFontFallback: "Times New Roman",
+  fallback: ["Georgia", "serif"],
+  src: [{ path: "./fonts/Gloock-latin.woff2", style: "normal", weight: "400" }],
+});
+
 const instrument = localFont({
   variable: "--font-instrument",
   display: "swap",
@@ -51,7 +61,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-GB" className={`${vollkorn.variable} ${instrument.variable}`}>
+    <html lang="en-GB" className={`${vollkorn.variable} ${gloock.variable} ${instrument.variable}`}>
       <body>
         <SmoothScroll />
         <RevealProvider />

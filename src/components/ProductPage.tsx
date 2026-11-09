@@ -26,7 +26,7 @@ export default function ProductPage({ p }: { p: Product }) {
           <div className="lg:col-span-7">
             <Reveal
               mode="rise"
-              className={`u-display mb-10 max-w-[30ch] italic text-teal ${p.describe ? "text-[clamp(1.5rem,2.6vw,2.2rem)]" : "text-[clamp(2.4rem,5vw,4.2rem)]"}`}
+              className={`u-display u-feature mb-10 max-w-[30ch] text-teal ${p.describe ? "text-[clamp(1.5rem,2.6vw,2.2rem)]" : "text-[clamp(2.4rem,5vw,4.2rem)]"}`}
             >
               {p.describe ?? p.card}
             </Reveal>
@@ -102,7 +102,7 @@ export default function ProductPage({ p }: { p: Product }) {
                       </span>
                       <p className="u-label text-kelp">0{i + 1}</p>
                     </div>
-                    <h3 className="u-display mt-4 text-[clamp(1.8rem,3vw,2.6rem)] italic">{u.title}</h3>
+                    <h3 className="u-display u-feature mt-4 text-[clamp(1.8rem,3vw,2.6rem)]">{u.title}</h3>
                     <p className="u-body mt-4 text-foam/85">{u.body}</p>
                     <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2" aria-label={`${u.title}: industries`}>
                       {u.sectors.map((s) => (

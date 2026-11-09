@@ -75,7 +75,7 @@ export default function Page() {
         <div className="u-wrap relative grid gap-12 lg:grid-cols-[1fr_1.2fr]">
           <div>
             <p className="u-label text-kelp">Integrated Multi Trophic Aquaculture</p>
-            <h2 className="u-display mt-5 text-[clamp(2.4rem,5vw,4.4rem)] italic">{story.aside}</h2>
+            <h2 className="u-display u-feature mt-5 text-[clamp(2.4rem,5vw,4.4rem)]">{story.aside}</h2>
           </div>
           <Reveal mode="rise" className="u-body text-foam/85">
             {story.imta}

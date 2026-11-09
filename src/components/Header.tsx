@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { mailto, nav } from "@/lib/site";
+import { nav } from "@/lib/site";
 
 /**
  * Sits over the photograph until you leave it, then takes the deep
@@ -76,9 +76,9 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <a href={mailto("Oyster Enquiry")} className="u-btn hidden py-2.5 sm:inline-flex">
-            Buy oysters
-          </a>
+          <Link href="/click-and-collect/" className="u-btn hidden py-2.5 sm:inline-flex">
+            Order now
+          </Link>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -123,14 +123,14 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
-          <a
-            href={mailto("Oyster Enquiry")}
+          <Link
+            href="/click-and-collect/"
             onClick={() => setOpen(false)}
             className="u-btn mt-8 self-start"
             style={{ opacity: open ? 1 : 0, transition: "opacity 650ms var(--ease-out-expo) 420ms" }}
           >
-            Buy our oysters
-          </a>
+            Order now
+          </Link>
         </nav>
       </div>
     </header>

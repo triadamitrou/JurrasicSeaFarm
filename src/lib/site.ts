@@ -40,10 +40,30 @@ export function mailto(subject?: string, body?: string) {
 export const nav = [
   { label: "Oysters", href: "/oysters/" },
   { label: "Seaweed", href: "/seaweed/" },
+  { label: "Click and collect", href: "/click-and-collect/" },
   { label: "Our story", href: "/our-story/" },
   { label: "Work with us", href: "/work-with-us/" },
   { label: "Contact", href: "/contact/" },
 ];
+
+/**
+ * The home page leads with the oysters, the farm's main product. "Premium",
+ * "high yield" and "larger than usual" are the farm's own words
+ * (8 November 2026).
+ */
+export const home = {
+  label: "Pacific Oysters / Portland Harbour, Dorset",
+  headline: "Premium Dorset oysters",
+  sub: "High-yield Pacific Oysters, grown larger than usual in the gin-clear water of Portland Harbour.",
+  oysterTitle: "Larger than usual, grown in gin-clear water.",
+  spec: [
+    { k: "Species", v: "Crassostrea gigas", latin: true },
+    { k: "Grown in", v: "Portland Harbour, Dorset" },
+    { k: "Size", v: "Larger than usual" },
+    { k: "Yield", v: "High yield" },
+    { k: "Method", v: "Our own system, developed for the harbour" },
+  ],
+};
 
 export const intro = {
   title: "Who are we?",
@@ -274,6 +294,65 @@ export const work = {
     },
   ],
   closing: "Not sure where you fit? Neither were we in 2022. Send us a message in a bottle and we will find out together.",
+};
+
+/**
+ * Click and collect. A preview of a shop, not a working one: nothing is
+ * charged and no order is sent. The oysters being premium, high yield and
+ * larger than usual is from the farm (8 November 2026). Pack sizes and
+ * collection times are examples to agree with the farm; prices are left
+ * null until the farm gives them, and the page shows "To confirm".
+ */
+export type ShopItem = {
+  key: string;
+  name: string;
+  latin: string;
+  line: string;
+  image: string;
+  alt: string;
+  packs: { key: string; label: string; price: number | null }[];
+};
+
+export const shop = {
+  title: "Click and collect",
+  lede: "Order online, then collect from the harbour, fresh from the water.",
+  preview: "Preview only. This page shows how ordering could work: no order is sent and no payment is taken.",
+  collectFrom: "Portland Harbour, Dorset",
+  collectNote: "Exact collection point to confirm",
+  slots: ["Morning", "Afternoon"],
+  items: [
+    {
+      key: "oysters",
+      name: "Pacific Oysters",
+      latin: "Crassostrea gigas",
+      line: "Premium, high-yield oysters, grown larger than usual in the gin-clear water of Portland Harbour.",
+      image: "/img/oysters-crate.jpg",
+      alt: "Gloved hands sorting Pacific Oysters in a crate",
+      packs: [
+        { key: "6", label: "6 oysters", price: null },
+        { key: "12", label: "12 oysters", price: null },
+        { key: "24", label: "24 oysters", price: null },
+      ],
+    },
+    {
+      key: "kelp",
+      name: "Sugar Kelp",
+      latin: "Saccharina latissima",
+      line: "A subtly salty umami flavour and a richness in iodine. A little seaweed goes a long way.",
+      image: "/img/kelp-rope.jpg",
+      alt: "A length of Sugar Kelp lifted onto the deck on its growing rope",
+      packs: [
+        { key: "250g", label: "250g", price: null },
+        { key: "500g", label: "500g", price: null },
+        { key: "1kg", label: "1kg", price: null },
+      ],
+    },
+  ] satisfies ShopItem[],
+  steps: [
+    { title: "Choose", body: "Pick oysters, kelp or both, and how many." },
+    { title: "Pick a slot", body: "Choose a day and a morning or afternoon collection." },
+    { title: "Collect", body: "Pick up at the harbour on the chosen day." },
+  ],
 };
 
 export const contact = {

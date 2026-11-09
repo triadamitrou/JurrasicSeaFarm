@@ -110,7 +110,7 @@ export default function WaterColumn() {
                   <span className="tabular-nums opacity-60">0{i + 1}</span>
                   {c.depth}
                 </p>
-                <h3 className="u-display mt-3 text-[clamp(2.6rem,7vw,5.6rem)] italic">{c.title}</h3>
+                <h3 className="u-display u-feature mt-3 text-[clamp(2.6rem,7vw,5.6rem)]">{c.title}</h3>
                 <p className="u-body mt-4 max-w-[40ch]">{c.body}</p>
               </li>
             ))}
