@@ -46,7 +46,7 @@ export default function Header() {
       ref={ref}
       data-condensed="false"
       data-open={open}
-      className="site-header fixed inset-x-0 top-0 z-50 py-3 text-foam"
+      className="site-header fixed inset-x-0 top-0 z-50 py-3"
     >
       <div className="u-wrap flex items-center justify-between gap-6">
         <Link
@@ -55,7 +55,16 @@ export default function Header() {
           onClick={() => setOpen(false)}
           className="relative z-10 shrink-0"
         >
-          <span className="u-logo w-[8.5rem] sm:w-[10rem]" />
+          {/* The new logo, set side by side for the bar: dark lettering on
+              the light header, the light-lettered twin over the open menu. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={open ? "/img/logo-header-dark.png" : "/img/logo-header.png"}
+            alt="Jurassic Seafarms"
+            width={946}
+            height={240}
+            className="h-10 w-auto sm:h-12"
+          />
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-7 lg:flex">
@@ -76,7 +85,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link href="/click-and-collect/" className="u-btn hidden py-2.5 sm:inline-flex">
+          <Link href="/click-and-collect/" className="u-btn u-btn--navy hidden py-2.5 sm:inline-flex">
             Order now
           </Link>
           <button

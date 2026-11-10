@@ -467,8 +467,19 @@ body {
     color 500ms var(--ease-out-expo),
     padding 500ms var(--ease-out-expo);
 }
-.site-header[data-condensed="true"][data-open="false"] {
-  background: color-mix(in srgb, var(--color-abyss) 88%, transparent);
+/*
+ * A light bar on every page, so the logo's dark lettering sits on the
+ * ground it was drawn for. It turns clear over the open mobile menu.
+ */
+.site-header[data-open="false"] {
+  background: color-mix(in srgb, var(--color-foam) 94%, transparent);
+  color: var(--color-navy);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+.site-header[data-condensed="true"][data-open="false"] {
+  box-shadow: 0 1px 0 rgba(18, 53, 86, 0.1), 0 12px 30px -24px rgba(10, 31, 51, 0.5);
+}
+.site-header[data-open="true"] {
+  color: var(--color-foam);
 }

@@ -51,7 +51,14 @@ export default function Footer() {
         />
         <div className="u-wrap relative grid gap-14 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <span className="u-mark w-20 text-aqua" aria-hidden="true" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/img/logo-stacked-dark.png"
+              alt="Jurassic Seafarms, finest quality oysters, Jurassic Coast, Dorset"
+              width={624}
+              height={700}
+              className="h-auto w-[11rem]"
+            />
             <p className="u-display mt-6 max-w-[16ch] text-[clamp(1.8rem,3.4vw,2.8rem)]">
               Harvesting the future.
             </p>

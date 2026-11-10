@@ -63,7 +63,7 @@ export default function ContactScene({ children }: { children: ReactNode }) {
       className="relative isolate min-h-[100svh] overflow-hidden"
       style={{
         background:
-          "linear-gradient(to bottom, var(--color-abyss) 0, var(--color-abyss) 6rem, var(--color-aqua) 6rem, #7fd6cc 30%, var(--color-teal) 68%, var(--color-teal-deep) 100%)",
+          "linear-gradient(to bottom, var(--color-aqua) 0, #7fd6cc 30%, var(--color-teal) 68%, var(--color-teal-deep) 100%)",
       }}
       onInput={(e) => {
         const el = e.target as HTMLElement;

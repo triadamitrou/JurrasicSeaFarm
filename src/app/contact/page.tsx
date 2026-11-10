@@ -25,7 +25,8 @@ export default function Page() {
               href={mailto()}
               className="mt-8 inline-flex items-center gap-3 rounded-full bg-navy px-5 py-3 text-[1rem] font-semibold text-foam transition-transform duration-500 hover:-translate-y-0.5"
             >
-              <span aria-hidden="true" className="u-mark w-6 text-aqua" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/img/logo-illustration.png" alt="" width={145} height={160} className="h-7 w-auto rounded-sm bg-foam p-0.5" />
               {site.email}
             </a>
           </div>
