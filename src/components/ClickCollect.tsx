@@ -1,16 +1,26 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { shop } from "@/lib/site";
 
-type Line = { item: string; pack: string; qty: number };
+/**
+ * Click and collect, laid out like a good fishmonger's counter: a large
+ * photograph, a name, one line, and a row per pack with an Add button.
+ * Nothing else competes. Collection only, so every price reads
+ * "collected", never delivered.
+ *
+ * It is a preview: no order is sent and nothing is charged. Prices stay
+ * empty until the farm gives them, and the rows say so quietly.
+ */
 
-const gbp = (n: number) => `£${n.toFixed(2)}`;
+type Key = string; // `${item}:${pack}`
 
+const gbp = (n: number) => `£${Number.isInteger(n) ? n : n.toFixed(2)}`;
 const noop = () => () => {};
 
-/** The next seven days, from tomorrow. Only in the browser, so the server and browser agree. */
+/** The next seven days from tomorrow, read in the browser only. */
 function useDays() {
   const client = useSyncExternalStore(noop, () => true, () => false);
   return useMemo(() => {
@@ -27,303 +37,221 @@ function useDays() {
   }, [client]);
 }
 
-/**
- * A shop that looks and behaves like one, without taking an order:
- * choose a pack, add to the basket, pick a collection slot, and the
- * last step says plainly that nothing was sent.
- */
+const GOLD = "#8a6a2a";
+
 export default function ClickCollect() {
-  const [picked, setPicked] = useState<Record<string, string>>(
-    Object.fromEntries(shop.items.map((i) => [i.key, i.packs[1].key])),
-  );
-  const [qty, setQty] = useState<Record<string, number>>(Object.fromEntries(shop.items.map((i) => [i.key, 1])));
-  const [basket, setBasket] = useState<Line[]>([]);
+  const [qty, setQty] = useState<Record<Key, number>>({});
   const [day, setDay] = useState<string | null>(null);
-  const [slot, setSlot] = useState<string>(shop.slots[0]);
+  const [slot, setSlot] = useState(shop.slots[0]);
   const [placed, setPlaced] = useState<string | null>(null);
   const days = useDays();
 
-  const find = (item: string, pack: string) => {
-    const i = shop.items.find((x) => x.key === item)!;
-    return { i, p: i.packs.find((x) => x.key === pack)! };
-  };
-
-  const add = (item: string) => {
-    const pack = picked[item];
-    const n = qty[item];
+  const set = (k: Key, n: number) => {
     setPlaced(null);
-    setBasket((b) => {
-      const hit = b.find((l) => l.item === item && l.pack === pack);
-      if (hit) return b.map((l) => (l === hit ? { ...l, qty: l.qty + n } : l));
-      return [...b, { item, pack, qty: n }];
+    setQty((q) => {
+      const next = { ...q };
+      if (n <= 0) delete next[k];
+      else next[k] = n;
+      return next;
     });
   };
 
-  const change = (idx: number, d: number) =>
-    setBasket((b) => b.flatMap((l, i) => (i !== idx ? [l] : l.qty + d <= 0 ? [] : [{ ...l, qty: l.qty + d }])));
-
-  const total = useMemo(() => {
-    let sum = 0;
-    for (const l of basket) {
-      const { p } = find(l.item, l.pack);
-      if (p.price === null) return null;
-      sum += p.price * l.qty;
-    }
-    return sum;
-  }, [basket]);
-
-  const count = basket.reduce((s, l) => s + l.qty, 0);
-  const chosenDay = days.find((d) => d.key === day);
+  const lines = Object.entries(qty).map(([k, n]) => {
+    const [item, pack] = k.split(":");
+    const i = shop.items.find((x) => x.key === item)!;
+    const p = i.packs.find((x) => x.key === pack)!;
+    return { k, i, p, n };
+  });
+  const count = lines.reduce((s, l) => s + l.n, 0);
+  const priced = lines.every((l) => l.p.price !== null);
+  const total = lines.reduce((s, l) => s + (l.p.price ?? 0) * l.n, 0);
+  const chosen = days.find((d) => d.key === day);
 
   return (
-    <section aria-label="Shop" className="bg-abyss pb-24 pt-14 text-foam sm:pb-32">
-      <div className="u-wrap">
-        <p
-          role="note"
-          className="mb-12 flex items-start gap-3 rounded-[3px] border border-kelp/35 px-4 py-3 text-[0.9rem] text-foam/80"
-        >
-          <span aria-hidden="true" className="mt-[0.45rem] h-2 w-2 shrink-0 rounded-full bg-kelp" />
-          {shop.preview}
-        </p>
-
-        <div className="grid gap-12 lg:grid-cols-12">
-          {/* The two products */}
-          <div className="grid gap-10 sm:grid-cols-2 lg:col-span-8">
-            {shop.items.map((it) => {
-              const pack = it.packs.find((p) => p.key === picked[it.key])!;
-              return (
-                <article
-                  key={it.key}
-                  className={`flex flex-col sm:col-span-2 lg:grid lg:gap-10 ${it.key === "oysters" ? "lg:grid-cols-[1.15fr_1fr]" : "border-t border-foam/15 pt-10 lg:grid-cols-[0.75fr_1fr]"}`}
-                >
-                  <div className={`relative overflow-hidden rounded-[2px] bg-foam/5 ${it.key === "oysters" ? "aspect-[4/3] lg:aspect-auto lg:min-h-[26rem]" : "aspect-[4/3] lg:aspect-auto lg:min-h-[17rem]"}`}>
-                    <Image src={it.image} alt={it.alt} fill sizes="(min-width:1024px) 30vw, (min-width:640px) 45vw, 100vw" className="object-cover" />
-                    {it.key === "oysters" ? (
-                      <span className="u-label absolute left-4 top-4 rounded-full border border-kelp/60 bg-abyss/80 px-3 py-1.5 text-kelp backdrop-blur">
-                        Premium, high yield
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="flex flex-1 flex-col">
-                  {it.key === "oysters" ? <p className="u-label mt-6 text-kelp lg:mt-2">The main harvest</p> : <p className="u-label mt-6 text-foam/55">Grown alongside</p>}
-                  <h2 className={`u-display mt-3 ${it.key === "oysters" ? "text-[clamp(2.2rem,3.6vw,3.2rem)]" : "text-[clamp(1.8rem,2.6vw,2.3rem)]"}`}>{it.name}</h2>
-                  <p className="u-latin text-kelp">{it.latin}</p>
-                  <p className="mt-3 max-w-[40ch] text-foam/75">{it.line}</p>
-
-                  <fieldset className="mt-5">
-                    <legend className="u-label mb-2.5 text-foam/55">Pack</legend>
-                    <div className="flex flex-wrap gap-2">
-                      {it.packs.map((p) => (
-                        <label
-                          key={p.key}
-                          className={`cursor-pointer rounded-full px-4 py-2 text-[0.88rem] transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-kelp ${picked[it.key] === p.key ? "bg-kelp text-abyss" : "shadow-[inset_0_0_0_1px_rgba(233,246,244,0.35)] hover:shadow-[inset_0_0_0_1px_var(--color-kelp)]"}`}
-                        >
-                          <input
-                            type="radio"
-                            name={`pack-${it.key}`}
-                            value={p.key}
-                            checked={picked[it.key] === p.key}
-                            onChange={() => setPicked((s) => ({ ...s, [it.key]: p.key }))}
-                            className="sr-only"
-                          />
-                          {p.label}
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-
-                  <div className="mt-auto flex flex-wrap items-center justify-between gap-4 pt-6">
-                    <p className="text-[1.15rem] font-semibold">
-                      {pack.price === null ? <ToConfirm dark /> : gbp(pack.price)}
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <Stepper
-                        dark
-                        label={`${it.name} quantity`}
-                        value={qty[it.key]}
-                        onChange={(v) => setQty((s) => ({ ...s, [it.key]: v }))}
-                      />
-                      <button type="button" onClick={() => add(it.key)} className="u-btn py-3">
-                        Add to basket
-                      </button>
-                    </div>
-                  </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-
-          {/* The basket */}
-          <aside aria-label="Basket" className="lg:col-span-4">
-            <div className="rounded-[2px] border border-kelp/30 bg-navy/70 p-6 text-foam sm:p-7 lg:sticky lg:top-28">
-              <div className="flex items-baseline justify-between">
-                <h2 className="u-display text-[1.8rem]">Basket</h2>
-                <span className="u-label text-kelp">{count} {count === 1 ? "item" : "items"}</span>
+    <>
+      <section aria-label="Products" className="bg-white pb-24 pt-16 text-navy sm:pt-20">
+        <div className="u-wrap grid gap-x-10 gap-y-20 md:grid-cols-2">
+          {shop.items.map((it, idx) => (
+            <article key={it.key} className="flex flex-col">
+              <div className="relative aspect-square overflow-hidden bg-navy/[0.04]">
+                <Image
+                  src={it.image}
+                  alt={it.alt}
+                  fill
+                  sizes="(min-width:768px) 45vw, 100vw"
+                  className="object-cover"
+                />
               </div>
 
-              {basket.length === 0 ? (
-                <p className="mt-4 text-foam/70">Nothing here yet. Choose a pack and press Add.</p>
-              ) : (
-                <ul className="mt-4 divide-y divide-foam/15 border-y border-foam/15">
-                  {basket.map((l, idx) => {
-                    const { i, p } = find(l.item, l.pack);
-                    return (
-                      <li key={`${l.item}-${l.pack}`} className="flex items-center justify-between gap-3 py-3">
-                        <div>
-                          <p className="font-medium">{i.name}</p>
-                          <p className="text-[0.85rem] text-foam/70">
-                            {p.label}, {p.price === null ? "price to confirm" : gbp(p.price)}
-                          </p>
+              <p className="u-label mt-8" style={{ color: GOLD }}>
+                {idx === 0 ? "The harvest" : "Grown alongside"}
+              </p>
+              <h2 className="mt-3 font-[family-name:var(--font-display)] text-[clamp(2rem,3.2vw,2.75rem)] font-normal leading-tight">
+                {it.name}
+              </h2>
+              <p className="mt-3 max-w-[46ch] text-[1.02rem] leading-relaxed text-navy/65">{it.line}</p>
+
+              <ul className="mt-8 border-t border-navy/12">
+                {it.packs.map((p) => {
+                  const k = `${it.key}:${p.key}`;
+                  const n = qty[k] ?? 0;
+                  return (
+                    <li key={p.key} className="flex items-center justify-between gap-6 border-b border-navy/12 py-5">
+                      <div>
+                        <p className="text-[1.05rem]">{p.label}</p>
+                        <p className="mt-0.5 text-navy/55">
+                          {p.price === null ? (
+                            <span className="text-[0.92rem]">Price to confirm</span>
+                          ) : (
+                            <>
+                              <span className="font-[family-name:var(--font-display)] text-[1.35rem] text-navy">
+                                {gbp(p.price)}
+                              </span>{" "}
+                              <span className="text-[0.92rem]">collected</span>
+                            </>
+                          )}
+                        </p>
+                      </div>
+                      {n === 0 ? (
+                        <button
+                          type="button"
+                          onClick={() => set(k, 1)}
+                          aria-label={`Add ${p.label} of ${it.name}`}
+                          className="h-12 w-[7.5rem] border border-navy/30 text-[0.82rem] font-medium uppercase tracking-[0.22em] transition-colors hover:border-navy hover:bg-navy hover:text-white"
+                        >
+                          Add
+                        </button>
+                      ) : (
+                        <div
+                          role="group"
+                          aria-label={`${p.label} of ${it.name} in the order`}
+                          className="flex h-12 w-[7.5rem] items-stretch bg-navy text-white"
+                        >
+                          <button type="button" aria-label="One fewer" onClick={() => set(k, n - 1)} className="flex-1 text-lg hover:bg-white/10">
+                            &minus;
+                          </button>
+                          <span aria-live="polite" className="grid w-8 place-items-center font-semibold tabular-nums">
+                            {n}
+                          </span>
+                          <button type="button" aria-label="One more" onClick={() => set(k, n + 1)} className="flex-1 text-lg hover:bg-white/10">
+                            +
+                          </button>
                         </div>
-                        <Stepper dark label={`${i.name} ${p.label} in basket`} value={l.qty} min={0} onChange={(v) => change(idx, v - l.qty)} />
-                      </li>
-                    );
-                  })}
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="mt-5 text-[0.92rem] text-navy/55">
+                <span className="border-b border-navy/30 pb-0.5">Collected from {shop.collectFrom}</span>
+              </p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* The order: one quiet panel, collection only. */}
+      <section id="collection" aria-label="Your collection" className="scroll-mt-24 bg-white pb-32 text-navy">
+        <div className="u-wrap">
+          <div className="grid gap-12 border-t border-navy/15 pt-14 lg:grid-cols-[1fr_1.1fr]">
+            <div>
+              <p className="u-label" style={{ color: GOLD }}>
+                Your collection
+              </p>
+              {lines.length === 0 ? (
+                <p className="mt-5 text-navy/55">Nothing added yet.</p>
+              ) : (
+                <ul className="mt-5 border-t border-navy/12">
+                  {lines.map((l) => (
+                    <li key={l.k} className="flex items-baseline justify-between gap-4 border-b border-navy/12 py-4">
+                      <span>
+                        {l.n} &times; {l.i.name}, {l.p.label}
+                      </span>
+                      <span className="text-navy/60">{l.p.price === null ? "to confirm" : gbp(l.p.price * l.n)}</span>
+                    </li>
+                  ))}
                 </ul>
               )}
-
-              <fieldset className="mt-6">
-                <legend className="u-label mb-2.5 text-kelp">Collection day</legend>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {days.map((d) => (
-                    <label
-                      key={d.key}
-                      className={`cursor-pointer rounded-[3px] px-1 py-2 text-center text-[0.8rem] leading-tight transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-kelp ${day === d.key ? "bg-kelp text-abyss" : "bg-foam/[0.07] hover:bg-foam/15"}`}
-                    >
-                      <input type="radio" name="day" value={d.key} checked={day === d.key} onChange={() => setDay(d.key)} className="sr-only" />
-                      <span className="block font-semibold">{d.day}</span>
-                      {d.date}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-
-              <fieldset className="mt-4">
-                <legend className="u-label mb-2.5 text-kelp">Time</legend>
-                <div className="flex gap-2">
-                  {shop.slots.map((s) => (
-                    <label
-                      key={s}
-                      className={`flex-1 cursor-pointer rounded-full py-2 text-center text-[0.88rem] transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-kelp ${slot === s ? "bg-kelp text-abyss" : "shadow-[inset_0_0_0_1px_rgba(233,246,244,0.35)]"}`}
-                    >
-                      <input type="radio" name="slot" value={s} checked={slot === s} onChange={() => setSlot(s)} className="sr-only" />
-                      {s}
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-
-              <p className="mt-5 text-[0.88rem] text-foam/80">
-                Collect from {shop.collectFrom}.{" "}
-                <span className="text-kelp">{shop.collectNote}.</span>
-              </p>
-
-              <div className="mt-5 flex items-baseline justify-between border-t border-foam/15 pt-4">
-                <span className="u-label text-kelp">Total</span>
-                <span className="text-[1.3rem] font-semibold">
-                  {basket.length === 0 ? gbp(0) : total === null ? <ToConfirm dark /> : gbp(total)}
+              <div className="mt-6 flex items-baseline justify-between">
+                <span className="u-label text-navy/55">Total</span>
+                <span className="font-[family-name:var(--font-display)] text-[1.8rem]">
+                  {lines.length === 0 ? gbp(0) : priced ? gbp(total) : <span className="text-[1rem] text-navy/55">To confirm</span>}
                 </span>
+              </div>
+            </div>
+
+            <div>
+              <p className="u-label text-navy/55">Collection day</p>
+              <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-7">
+                {days.map((d) => (
+                  <button
+                    key={d.key}
+                    type="button"
+                    aria-pressed={day === d.key}
+                    onClick={() => setDay(d.key)}
+                    className={`border py-2.5 text-center text-[0.85rem] leading-tight transition-colors ${day === d.key ? "border-navy bg-navy text-white" : "border-navy/25 hover:border-navy"}`}
+                  >
+                    <span className="block">{d.day}</span>
+                    <span className="block text-[0.78rem] opacity-70">{d.date}</span>
+                  </button>
+                ))}
+              </div>
+
+              <p className="u-label mt-7 text-navy/55">Time</p>
+              <div className="mt-3 flex gap-2">
+                {shop.slots.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    aria-pressed={slot === s}
+                    onClick={() => setSlot(s)}
+                    className={`h-11 border px-5 text-[0.9rem] transition-colors ${slot === s ? "border-navy bg-navy text-white" : "border-navy/25 hover:border-navy"}`}
+                  >
+                    {s}
+                  </button>
+                ))}
               </div>
 
               <button
                 type="button"
-                disabled={basket.length === 0 || !day}
+                disabled={count === 0 || !day}
                 onClick={() => setPlaced(`JSF-${String(Math.floor(1000 + Math.random() * 9000))}`)}
-                className="u-btn mt-5 w-full justify-center disabled:cursor-not-allowed disabled:opacity-40"
+                className="mt-9 h-14 w-full bg-navy text-[0.85rem] font-medium uppercase tracking-[0.22em] text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-30"
               >
                 Reserve for collection
               </button>
-              {basket.length > 0 && !day ? (
-                <p className="mt-2 text-center text-[0.82rem] text-foam/70">Choose a collection day first.</p>
-              ) : null}
-
-              <div aria-live="polite">
-                {placed ? (
-                  <div className="mt-5 rounded-[3px] bg-aqua p-4 text-navy">
-                    <p className="u-label">Preview order {placed}</p>
-                    <p className="mt-2 text-[0.92rem]">
-                      {count} {count === 1 ? "item" : "items"} for collection on {chosenDay?.day} {chosenDay?.date},{" "}
-                      {slot.toLowerCase()}.
-                    </p>
-                    <p className="mt-2 text-[0.85rem] text-navy/75">
-                      This is a preview: no order has been sent and nothing has been charged.
-                    </p>
-                  </div>
-                ) : null}
-              </div>
+              <p aria-live="polite" className="mt-3 min-h-[1.5rem] text-[0.9rem] text-navy/60">
+                {placed
+                  ? `Preview ${placed}: ${count} ${count === 1 ? "item" : "items"} for ${chosen?.day} ${chosen?.date}, ${slot.toLowerCase()}. Nothing has been sent or charged.`
+                  : count > 0 && !day
+                    ? "Choose a collection day."
+                    : ""}
+              </p>
+              <p className="mt-6 text-[0.85rem] text-navy/45">{shop.preview}</p>
+              <p className="mt-2 text-[0.85rem] text-navy/45">
+                Buying for a restaurant or shop?{" "}
+                <Link href="/work-with-us/#kitchens" className="border-b border-navy/30 text-navy/70 hover:text-navy">
+                  Trade orders
+                </Link>
+              </p>
             </div>
-          </aside>
+          </div>
         </div>
+      </section>
 
-        {/* How it works */}
-        <ol className="mt-20 grid gap-8 border-t border-foam/15 pt-12 sm:grid-cols-3">
-          {shop.steps.map((s, i) => (
-            <li key={s.title}>
-              <p className="u-label text-kelp">0{i + 1}</p>
-              <h3 className="u-display mt-2 text-[1.7rem]">{s.title}</h3>
-              <p className="mt-2 max-w-[32ch] text-foam/75">{s.body}</p>
-            </li>
-          ))}
-        </ol>
-
-        {/* Trade buyers get their own way in. */}
+      {/* A slim bar once something is in the order, so it is never lost. */}
+      {count > 0 && !placed ? (
         <a
-          href="/work-with-us/#kitchens"
-          className="group mt-16 flex flex-wrap items-center justify-between gap-6 rounded-[2px] border border-foam/15 bg-navy/60 px-6 py-8 text-foam transition-colors duration-500 hover:border-kelp/60 sm:px-10"
+          href="#collection"
+          className="fixed inset-x-4 bottom-4 z-40 mx-auto flex max-w-md items-center justify-between gap-6 bg-navy px-5 py-4 sm:w-[26rem] text-white shadow-[0_18px_40px_-18px_rgba(10,31,51,0.7)] sm:inset-x-auto sm:right-6"
         >
-          <span>
-            <span className="u-label block text-kelp">Trade and wholesale</span>
-            <span className="u-display mt-2 block text-[clamp(1.6rem,3vw,2.4rem)]">
-              Buying for a restaurant, fishmonger or shop?
-            </span>
-            <span className="mt-2 block text-foam/80">Ask about trade orders and larger volumes.</span>
+          <span className="text-[0.95rem]">
+            {count} {count === 1 ? "item" : "items"}
+            {priced ? `, ${gbp(total)}` : ""}
           </span>
-          <span
-            aria-hidden="true"
-            className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-kelp text-xl text-abyss transition-transform duration-500 group-hover:translate-x-2"
-          >
-            &rarr;
-          </span>
+          <span className="text-[0.8rem] font-medium uppercase tracking-[0.2em]">Choose collection &darr;</span>
         </a>
-      </div>
-    </section>
-  );
-}
-
-function ToConfirm({ dark = false }: { dark?: boolean }) {
-  return (
-    <span className={`rounded-full px-3 py-1 text-[0.78rem] font-semibold uppercase tracking-[0.08em] ${dark ? "bg-kelp/25 text-kelp" : "bg-kelp/20 text-[#7a5d1c]"}`}>
-      Price to confirm
-    </span>
-  );
-}
-
-function Stepper({
-  value,
-  onChange,
-  label,
-  min = 1,
-  dark = false,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-  label: string;
-  min?: number;
-  dark?: boolean;
-}) {
-  const btn = `grid h-9 w-9 place-items-center rounded-full text-lg leading-none transition-colors ${dark ? "hover:bg-foam/15" : "hover:bg-navy/10"}`;
-  return (
-    <div role="group" aria-label={label} className={`flex items-center rounded-full ${dark ? "shadow-[inset_0_0_0_1.5px_rgba(233,246,244,0.35)]" : "shadow-[inset_0_0_0_1.5px_currentColor]"}`}>
-      <button type="button" aria-label="One fewer" onClick={() => onChange(Math.max(min, value - 1))} className={btn}>
-        &minus;
-      </button>
-      <span aria-live="polite" className="w-6 text-center font-semibold tabular-nums">
-        {value}
-      </span>
-      <button type="button" aria-label="One more" onClick={() => onChange(value + 1)} className={btn}>
-        +
-      </button>
-    </div>
+      ) : null}
+    </>
   );
 }
