@@ -70,26 +70,23 @@ export default function ClickCollect() {
   return (
     <>
       <section aria-label="Products" className="bg-white pb-24 pt-16 text-navy sm:pt-20">
-        <div className="u-wrap grid gap-x-10 gap-y-20 md:grid-cols-2">
+        <div className="u-wrap grid gap-x-14 gap-y-16 md:grid-cols-2">
           {shop.items.map((it, idx) => (
             <article key={it.key} className="flex flex-col">
-              <div className="relative aspect-square overflow-hidden bg-navy/[0.04]">
-                <Image
-                  src={it.image}
-                  alt={it.alt}
-                  fill
-                  sizes="(min-width:768px) 45vw, 100vw"
-                  className="object-cover"
-                />
+              <div className="flex items-start gap-5">
+                <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-navy/[0.04] sm:h-28 sm:w-28">
+                  <Image src={it.image} alt={it.alt} fill sizes="112px" className="object-cover" />
+                </div>
+                <div>
+                  <p className="u-label" style={{ color: GOLD }}>
+                    {idx === 0 ? "The harvest" : "Grown alongside"}
+                  </p>
+                  <h2 className="mt-2 font-[family-name:var(--font-display)] text-[clamp(1.7rem,2.6vw,2.25rem)] font-normal leading-tight">
+                    {it.name}
+                  </h2>
+                  <p className="mt-2 max-w-[40ch] text-[0.98rem] leading-relaxed text-navy/65">{it.line}</p>
+                </div>
               </div>
-
-              <p className="u-label mt-8" style={{ color: GOLD }}>
-                {idx === 0 ? "The harvest" : "Grown alongside"}
-              </p>
-              <h2 className="mt-3 font-[family-name:var(--font-display)] text-[clamp(2rem,3.2vw,2.75rem)] font-normal leading-tight">
-                {it.name}
-              </h2>
-              <p className="mt-3 max-w-[46ch] text-[1.02rem] leading-relaxed text-navy/65">{it.line}</p>
 
               <ul className="mt-8 border-t border-navy/12">
                 {it.packs.map((p) => {
