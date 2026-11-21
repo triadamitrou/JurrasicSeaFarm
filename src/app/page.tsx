@@ -10,8 +10,8 @@ export default function Home() {
       {/* 1. Hero: the oysters lead. They are the main product. */}
       <section className="relative flex min-h-[100svh] items-end overflow-hidden bg-abyss pb-16 sm:pb-24">
         <Image
-          src="/img/oysters-pile.jpg"
-          alt="A heap of freshly lifted Pacific Oysters from Portland Harbour"
+          src="/img/oyster-plate.jpg"
+          alt="Five opened oysters on ice around a slice of lemon, on a blue and green painted plate on a weathered wooden table"
           fill
           priority
           sizes="100vw"
@@ -22,17 +22,17 @@ export default function Home() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to top, var(--color-abyss) 2%, color-mix(in srgb, var(--color-abyss) 70%, transparent) 50%, color-mix(in srgb, var(--color-abyss) 55%, transparent))",
+              "linear-gradient(to top, var(--color-abyss) 0%, color-mix(in srgb, var(--color-abyss) 78%, transparent) 30%, color-mix(in srgb, var(--color-abyss) 28%, transparent) 62%, color-mix(in srgb, var(--color-abyss) 38%, transparent))",
           }}
         />
         <div className="u-wrap relative">
-          <Reveal as="p" mode="fade" className="u-label text-kelp">
+          <Reveal as="p" mode="fade" className="u-label text-foam [text-shadow:0_1px_12px_rgba(10,31,51,0.9)]">
             {home.label}
           </Reveal>
           <Words
             as="h1"
             text={home.headline}
-            className="u-display mt-5 max-w-[11ch] text-[clamp(2.8rem,9vw,8.5rem)]"
+            className="mt-5 max-w-[15ch] font-[family-name:var(--font-cormorant)] text-[clamp(3rem,9vw,8.5rem)] font-normal leading-[1.02] tracking-[-0.01em]"
             stagger={90}
           />
           <Reveal mode="rise" delay={350} className="mt-6 max-w-[46ch] text-[clamp(1.05rem,1.4vw,1.3rem)] text-foam/90">

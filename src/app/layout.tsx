@@ -32,6 +32,16 @@ const gloock = localFont({
   src: [{ path: "./fonts/Gloock-latin.woff2", style: "normal", weight: "400" }],
 });
 
+// Cormorant Garamond for the home page headline: the light, high-contrast
+// serif of the logo's own lettering.
+const cormorant = localFont({
+  variable: "--font-cormorant",
+  display: "swap",
+  adjustFontFallback: "Times New Roman",
+  fallback: ["Georgia", "serif"],
+  src: [{ path: "./fonts/Cormorant-latin.woff2", style: "normal", weight: "300 700" }],
+});
+
 const instrument = localFont({
   variable: "--font-instrument",
   display: "swap",
@@ -61,7 +71,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-GB" className={`${vollkorn.variable} ${gloock.variable} ${instrument.variable}`}>
+    <html lang="en-GB" className={`${vollkorn.variable} ${gloock.variable} ${cormorant.variable} ${instrument.variable}`}>
       <body>
         <SmoothScroll />
         <RevealProvider />
