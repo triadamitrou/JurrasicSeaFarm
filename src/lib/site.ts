@@ -305,14 +305,26 @@ export const work = {
  */
 export type ShopItem = {
   key: string;
+  kicker: string;
   name: string;
   latin: string;
   line: string;
+  /** A sentence or two for the product's own page. */
+  about: string;
+  /** Keeping and serving, a line each. */
+  care: string[];
   image: string;
   alt: string;
-  packs: { key: string; label: string; price: number | null }[];
+  grades?: string[];
+  gradeNote?: string;
+  packs: { label: string; detail?: string; price: number | null }[];
 };
 
+/**
+ * Pack sizes follow how UK sellers usually offer them for collection:
+ * oysters by the half dozen and dozen with a size grade, kelp by weight.
+ * They are examples to agree with the farm.
+ */
 export const shop = {
   title: "Click and collect",
   lede: "Order online, then collect from the harbour, fresh from the water.",
@@ -323,28 +335,37 @@ export const shop = {
   items: [
     {
       key: "oysters",
+      kicker: "The harvest",
       name: "Pacific Oysters",
       latin: "Crassostrea gigas",
-      line: "Premium, high-yield oysters, grown larger than usual in the gin-clear water of Portland Harbour.",
+      line: "Premium, high-yield oysters, grown larger than usual.",
+      about: "Premium, high-yield Pacific Oysters, grown larger than usual in the gin-clear water of Portland Harbour. Sold live, in the shell.",
+      care: ["Keep cold, cup side down, under a damp cloth.", "Best eaten within a few days of collection.", "Open just before serving."],
       image: "/img/oysters-crate.jpg",
       alt: "Gloved hands sorting Pacific Oysters in a crate",
+      grades: ["n°2", "n°3", "n°4"],
+      gradeNote: "The lower the number, the larger the oyster. n°3 is the classic size for the table.",
       packs: [
-        { key: "6", label: "6 oysters", price: null },
-        { key: "12", label: "12 oysters", price: null },
-        { key: "24", label: "24 oysters", price: null },
+        { label: "Half dozen", detail: "6 oysters", price: null },
+        { label: "One dozen", detail: "12 oysters", price: null },
+        { label: "Two dozen", detail: "24 oysters", price: null },
+        { label: "Four dozen", detail: "48 oysters", price: null },
       ],
     },
     {
       key: "kelp",
+      kicker: "Grown alongside",
       name: "Sugar Kelp",
       latin: "Saccharina latissima",
-      line: "A subtly salty umami flavour and a richness in iodine. A little seaweed goes a long way.",
+      line: "Subtly salty, rich in iodine.",
+      about: "Sugar Kelp grown on ropes beneath the oyster bags, with a subtly salty umami flavour and a richness in iodine. A little seaweed goes a long way.",
+      care: ["Keep chilled and use within a few days.", "Ideal for soups, salads and stocks."],
       image: "/img/kelp-rope.jpg",
       alt: "A length of Sugar Kelp lifted onto the deck on its growing rope",
       packs: [
-        { key: "250g", label: "250g", price: null },
-        { key: "500g", label: "500g", price: null },
-        { key: "1kg", label: "1kg", price: null },
+        { label: "250 g", detail: "fresh", price: null },
+        { label: "500 g", detail: "fresh", price: null },
+        { label: "1 kg", detail: "fresh", price: null },
       ],
     },
   ] satisfies ShopItem[],
