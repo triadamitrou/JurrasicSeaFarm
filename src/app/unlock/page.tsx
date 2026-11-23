@@ -10,6 +10,7 @@ import { useState } from "react";
 export default function Unlock() {
   const [password, setPassword] = useState("");
   const [state, setState] = useState<"idle" | "busy" | "wrong">("idle");
+  const [show, setShow] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -25,35 +26,74 @@ export default function Unlock() {
     }
     const next = new URLSearchParams(window.location.search).get("next") ?? "/";
     // Only ever go to a page on this site.
-    window.location.assign(next.startsWith("/") && !next.startsWith("//") ? next : "/");
+    window.location.assign(
+      next.startsWith("/") && !next.startsWith("//") ? next : "/",
+    );
   }
 
   return (
     <section className="fixed inset-0 z-[100] grid place-items-center overflow-y-auto bg-[#1f2a45] px-6 py-10 text-[#f4f0e8]">
       <form onSubmit={submit} className="w-full max-w-[22rem] text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/img/logo-stacked-dark.png" alt="Jurassic Seafarms" width={624} height={700} className="mx-auto h-auto w-[11rem]" />
-        <h1 className="mt-10 font-[family-name:var(--font-cormorant)] text-[2rem] leading-tight">This site is private</h1>
-        <p className="mt-2 text-[0.95rem] opacity-70">Enter the password to come in.</p>
+        <img
+          src="/img/logo-stacked-dark.png"
+          alt="Jurassic Seafarms"
+          width={624}
+          height={700}
+          className="mx-auto h-auto w-[11rem]"
+        />
+        <h1 className="mt-10 font-[family-name:var(--font-cormorant)] text-[2rem] leading-tight">
+          This site is private
+        </h1>
+        <p className="mt-2 text-[0.95rem] opacity-70">
+          Enter the password to come in.
+        </p>
 
         <label htmlFor="gate-password" className="sr-only">
           Password
         </label>
-        <input
-          id="gate-password"
-          type="password"
-          autoFocus
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setState("idle");
-          }}
-          aria-invalid={state === "wrong"}
-          aria-describedby="gate-message"
-          placeholder="Password"
-          className="mt-8 h-14 w-full border border-[#f4f0e8]/35 bg-transparent px-4 text-center text-[1.05rem] text-[#f4f0e8] placeholder:text-[#f4f0e8]/40 focus:border-[#e3c29e] focus:outline-none"
-        />
+        <div className="relative mt-8">
+          <input
+            id="gate-password"
+            type={show ? "text" : "password"}
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            autoFocus
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setState("idle");
+            }}
+            aria-invalid={state === "wrong"}
+            aria-describedby="gate-message"
+            placeholder="Password"
+            className="h-14 w-full border border-[#f4f0e8]/35 bg-transparent px-14 text-center text-[1.05rem] text-[#f4f0e8] placeholder:text-[#f4f0e8]/40 focus:border-[#e3c29e] focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setShow((v) => !v)}
+            aria-label={show ? "Hide password" : "Show password"}
+            aria-pressed={show}
+            className="absolute inset-y-0 right-0 grid w-14 place-items-center text-[#f4f0e8]/60 transition-colors hover:text-[#f4f0e8]"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
+              <circle cx="12" cy="12" r="3" />
+              {show ? <path d="M4 4l16 16" /> : null}
+            </svg>
+          </button>
+        </div>
         <button
           type="submit"
           disabled={state === "busy" || !password}
@@ -61,7 +101,11 @@ export default function Unlock() {
         >
           {state === "busy" ? "Checking" : "Enter"}
         </button>
-        <p id="gate-message" role="alert" className="mt-4 min-h-[1.5rem] text-[0.92rem] text-[#e3c29e]">
+        <p
+          id="gate-message"
+          role="alert"
+          className="mt-4 min-h-[1.5rem] text-[0.92rem] text-[#e3c29e]"
+        >
           {state === "wrong" ? "That password is not right. Try again." : ""}
         </p>
       </form>
